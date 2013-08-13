@@ -1,0 +1,422 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="whatsgoingonModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+        <EntityContainer Name="whatsgoingonModelStoreContainer">
+          <EntitySet Name="Build" EntityType="whatsgoingonModel.Store.Build" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="BuildData" EntityType="whatsgoingonModel.Store.BuildData" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="BuildDiff" EntityType="whatsgoingonModel.Store.BuildDiff" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="BuildJira" EntityType="whatsgoingonModel.Store.BuildJira" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Category" EntityType="whatsgoingonModel.Store.Category" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_Build_BuildData" Association="whatsgoingonModel.Store.FK_Build_BuildData">
+            <End Role="Build" EntitySet="Build" />
+            <End Role="BuildData" EntitySet="BuildData" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Build_BuildDiff" Association="whatsgoingonModel.Store.FK_Build_BuildDiff">
+            <End Role="Build" EntitySet="Build" />
+            <End Role="BuildDiff" EntitySet="BuildDiff" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Build_PreviousBuild" Association="whatsgoingonModel.Store.FK_Build_PreviousBuild">
+            <End Role="Build" EntitySet="Build" />
+            <End Role="Build1" EntitySet="Build" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BuildDiff_Current" Association="whatsgoingonModel.Store.FK_BuildDiff_Current">
+            <End Role="BuildData" EntitySet="BuildData" />
+            <End Role="BuildDiff" EntitySet="BuildDiff" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BuildDiff_Previous" Association="whatsgoingonModel.Store.FK_BuildDiff_Previous">
+            <End Role="BuildData" EntitySet="BuildData" />
+            <End Role="BuildDiff" EntitySet="BuildDiff" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BuildJira_Build" Association="whatsgoingonModel.Store.FK_BuildJira_Build">
+            <End Role="Build" EntitySet="Build" />
+            <End Role="BuildJira" EntitySet="BuildJira" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Build">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="VMajor" Type="int" Nullable="false" />
+          <Property Name="VMinor" Type="int" Nullable="false" />
+          <Property Name="VPatch" Type="int" Nullable="false" />
+          <Property Name="VBuild" Type="int" />
+          <Property Name="GitSha" Type="varchar" MaxLength="9" />
+          <Property Name="PreviousId" Type="int" />
+          <Property Name="Created" Type="datetime2" Nullable="false" />
+          <Property Name="Modified" Type="datetime2" Nullable="false" />
+          <Property Name="Incomplete" Type="bit" Nullable="false" />
+          <Property Name="JiraProcessed" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BuildData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="BuildId" Type="int" Nullable="false" />
+          <Property Name="Category" Type="varchar" MaxLength="50" />
+          <Property Name="Type" Type="varchar" Nullable="false" MaxLength="10" />
+          <Property Name="Name" Type="nvarchar" Nullable="false" MaxLength="100" />
+          <Property Name="Data" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="Processed" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BuildDiff">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="bigint" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="BuildId" Type="int" Nullable="false" />
+          <Property Name="PreviousBuildDataId" Type="int" />
+          <Property Name="CurrentBuildDataId" Type="int" />
+          <Property Name="Diff" Type="nvarchar(max)" Nullable="false" />
+        </EntityType>
+        <EntityType Name="BuildJira">
+          <Key>
+            <PropertyRef Name="BuildId" />
+            <PropertyRef Name="Jira" />
+          </Key>
+          <Property Name="BuildId" Type="int" Nullable="false" />
+          <Property Name="Jira" Type="varchar" Nullable="false" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Name="Name" Type="varchar" Nullable="false" MaxLength="128" />
+        </EntityType>
+        <Association Name="FK_Build_BuildData">
+          <End Role="Build" Type="whatsgoingonModel.Store.Build" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="BuildData" Type="whatsgoingonModel.Store.BuildData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Build">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildData">
+              <PropertyRef Name="BuildId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Build_BuildDiff">
+          <End Role="Build" Type="whatsgoingonModel.Store.Build" Multiplicity="1" />
+          <End Role="BuildDiff" Type="whatsgoingonModel.Store.BuildDiff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Build">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildDiff">
+              <PropertyRef Name="BuildId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Build_PreviousBuild">
+          <End Role="Build" Type="whatsgoingonModel.Store.Build" Multiplicity="0..1" />
+          <End Role="Build1" Type="whatsgoingonModel.Store.Build" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Build">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Build1">
+              <PropertyRef Name="PreviousId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BuildDiff_Current">
+          <End Role="BuildData" Type="whatsgoingonModel.Store.BuildData" Multiplicity="0..1" />
+          <End Role="BuildDiff" Type="whatsgoingonModel.Store.BuildDiff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BuildData">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildDiff">
+              <PropertyRef Name="CurrentBuildDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BuildDiff_Previous">
+          <End Role="BuildData" Type="whatsgoingonModel.Store.BuildData" Multiplicity="0..1" />
+          <End Role="BuildDiff" Type="whatsgoingonModel.Store.BuildDiff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BuildData">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildDiff">
+              <PropertyRef Name="PreviousBuildDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BuildJira_Build">
+          <End Role="Build" Type="whatsgoingonModel.Store.Build" Multiplicity="1" />
+          <End Role="BuildJira" Type="whatsgoingonModel.Store.BuildJira" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Build">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildJira">
+              <PropertyRef Name="BuildId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="whatsgoingonModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+        <EntityContainer Name="whatsgoingonEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="BuildDatas" EntityType="whatsgoingonModel.BuildData" />
+          <EntitySet Name="Categories" EntityType="whatsgoingonModel.Category" />
+          <EntitySet Name="BuildDiffs" EntityType="whatsgoingonModel.BuildDiff" />
+          <AssociationSet Name="FK_BuildDiff_Current" Association="whatsgoingonModel.FK_BuildDiff_Current">
+            <End Role="BuildData" EntitySet="BuildDatas" />
+            <End Role="BuildDiff" EntitySet="BuildDiffs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BuildDiff_Previous" Association="whatsgoingonModel.FK_BuildDiff_Previous">
+            <End Role="BuildData" EntitySet="BuildDatas" />
+            <End Role="BuildDiff" EntitySet="BuildDiffs" />
+          </AssociationSet>
+          <EntitySet Name="Builds" EntityType="whatsgoingonModel.Build" />
+          <EntitySet Name="BuildJiras" EntityType="whatsgoingonModel.BuildJira" />
+          <AssociationSet Name="FK_Build_BuildData" Association="whatsgoingonModel.FK_Build_BuildData">
+            <End Role="Build" EntitySet="Builds" />
+            <End Role="BuildData" EntitySet="BuildDatas" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Build_BuildDiff" Association="whatsgoingonModel.FK_Build_BuildDiff">
+            <End Role="Build" EntitySet="Builds" />
+            <End Role="BuildDiff" EntitySet="BuildDiffs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Build_PreviousBuild" Association="whatsgoingonModel.FK_Build_PreviousBuild">
+            <End Role="Build" EntitySet="Builds" />
+            <End Role="Build1" EntitySet="Builds" />
+          </AssociationSet>
+          <AssociationSet Name="FK_BuildJira_Build" Association="whatsgoingonModel.FK_BuildJira_Build">
+            <End Role="Build" EntitySet="Builds" />
+            <End Role="BuildJira" EntitySet="BuildJiras" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="BuildData">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="BuildId" Nullable="false" />
+          <Property Type="String" Name="Category" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Type" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Type="String" Name="Data" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Type="Boolean" Name="Processed" Nullable="false" />
+          <NavigationProperty Name="BuildDiffs" Relationship="whatsgoingonModel.FK_BuildDiff_Current" FromRole="BuildData" ToRole="BuildDiff" />
+          <NavigationProperty Name="BuildDiffs1" Relationship="whatsgoingonModel.FK_BuildDiff_Previous" FromRole="BuildData" ToRole="BuildDiff" />
+          <NavigationProperty Name="Build" Relationship="whatsgoingonModel.FK_Build_BuildData" FromRole="BuildData" ToRole="Build" />
+        </EntityType>
+        <EntityType Name="Category">
+          <Key>
+            <PropertyRef Name="Name" />
+          </Key>
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="BuildDiff">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int64" Name="Id" Nullable="false" />
+          <Property Type="Int32" Name="BuildId" Nullable="false" />
+          <Property Type="Int32" Name="PreviousBuildDataId" />
+          <Property Type="Int32" Name="CurrentBuildDataId" />
+          <Property Type="String" Name="Diff" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="CurrentBuildData" Relationship="whatsgoingonModel.FK_BuildDiff_Current" FromRole="BuildDiff" ToRole="BuildData" />
+          <NavigationProperty Name="PreviousBuildData" Relationship="whatsgoingonModel.FK_BuildDiff_Previous" FromRole="BuildDiff" ToRole="BuildData" />
+          <NavigationProperty Name="Build" Relationship="whatsgoingonModel.FK_Build_BuildDiff" FromRole="BuildDiff" ToRole="Build" />
+        </EntityType>
+        <Association Name="FK_BuildDiff_Current">
+          <End Type="whatsgoingonModel.BuildData" Role="BuildData" Multiplicity="0..1" />
+          <End Type="whatsgoingonModel.BuildDiff" Role="BuildDiff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BuildData">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildDiff">
+              <PropertyRef Name="CurrentBuildDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BuildDiff_Previous">
+          <End Type="whatsgoingonModel.BuildData" Role="BuildData" Multiplicity="0..1" />
+          <End Type="whatsgoingonModel.BuildDiff" Role="BuildDiff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="BuildData">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildDiff">
+              <PropertyRef Name="PreviousBuildDataId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Build">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="VMajor" Nullable="false" />
+          <Property Type="Int32" Name="VMinor" Nullable="false" />
+          <Property Type="Int32" Name="VPatch" Nullable="false" />
+          <Property Type="Int32" Name="VBuild" />
+          <Property Type="String" Name="GitSha" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Type="Int32" Name="PreviousId" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="7" />
+          <Property Type="DateTime" Name="Modified" Nullable="false" Precision="7" />
+          <Property Type="Boolean" Name="Incomplete" Nullable="false" />
+          <Property Type="Boolean" Name="JiraProcessed" Nullable="false" />
+          <NavigationProperty Name="BuildDatas" Relationship="whatsgoingonModel.FK_Build_BuildData" FromRole="Build" ToRole="BuildData" />
+          <NavigationProperty Name="BuildDiffs" Relationship="whatsgoingonModel.FK_Build_BuildDiff" FromRole="Build" ToRole="BuildDiff" />
+          <NavigationProperty Name="NextBuilds" Relationship="whatsgoingonModel.FK_Build_PreviousBuild" FromRole="Build" ToRole="Build1" />
+          <NavigationProperty Name="PreviousBuild" Relationship="whatsgoingonModel.FK_Build_PreviousBuild" FromRole="Build1" ToRole="Build" />
+          <NavigationProperty Name="BuildJiras" Relationship="whatsgoingonModel.FK_BuildJira_Build" FromRole="Build" ToRole="BuildJira" />
+        </EntityType>
+        <EntityType Name="BuildJira">
+          <Key>
+            <PropertyRef Name="BuildId" />
+            <PropertyRef Name="Jira" />
+          </Key>
+          <Property Type="Int32" Name="BuildId" Nullable="false" />
+          <Property Type="String" Name="Jira" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Build" Relationship="whatsgoingonModel.FK_BuildJira_Build" FromRole="BuildJira" ToRole="Build" />
+        </EntityType>
+        <Association Name="FK_Build_BuildData">
+          <End Type="whatsgoingonModel.Build" Role="Build" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="whatsgoingonModel.BuildData" Role="BuildData" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Build">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildData">
+              <PropertyRef Name="BuildId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Build_BuildDiff">
+          <End Type="whatsgoingonModel.Build" Role="Build" Multiplicity="1" />
+          <End Type="whatsgoingonModel.BuildDiff" Role="BuildDiff" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Build">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildDiff">
+              <PropertyRef Name="BuildId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Build_PreviousBuild">
+          <End Type="whatsgoingonModel.Build" Role="Build" Multiplicity="0..1" />
+          <End Type="whatsgoingonModel.Build" Role="Build1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Build">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Build1">
+              <PropertyRef Name="PreviousId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_BuildJira_Build">
+          <End Type="whatsgoingonModel.Build" Role="Build" Multiplicity="1" />
+          <End Type="whatsgoingonModel.BuildJira" Role="BuildJira" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Build">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="BuildJira">
+              <PropertyRef Name="BuildId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="whatsgoingonModelStoreContainer" CdmEntityContainer="whatsgoingonEntities">
+          <EntitySetMapping Name="BuildDatas">
+            <EntityTypeMapping TypeName="whatsgoingonModel.BuildData">
+              <MappingFragment StoreEntitySet="BuildData">
+                <ScalarProperty Name="Processed" ColumnName="Processed" />
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Type" ColumnName="Type" />
+                <ScalarProperty Name="Category" ColumnName="Category" />
+                <ScalarProperty Name="BuildId" ColumnName="BuildId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Categories">
+            <EntityTypeMapping TypeName="whatsgoingonModel.Category">
+              <MappingFragment StoreEntitySet="Category">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BuildDiffs">
+            <EntityTypeMapping TypeName="whatsgoingonModel.BuildDiff">
+              <MappingFragment StoreEntitySet="BuildDiff">
+                <ScalarProperty Name="Diff" ColumnName="Diff" />
+                <ScalarProperty Name="CurrentBuildDataId" ColumnName="CurrentBuildDataId" />
+                <ScalarProperty Name="PreviousBuildDataId" ColumnName="PreviousBuildDataId" />
+                <ScalarProperty Name="BuildId" ColumnName="BuildId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Builds">
+            <EntityTypeMapping TypeName="whatsgoingonModel.Build">
+              <MappingFragment StoreEntitySet="Build">
+                <ScalarProperty Name="JiraProcessed" ColumnName="JiraProcessed" />
+                <ScalarProperty Name="Incomplete" ColumnName="Incomplete" />
+                <ScalarProperty Name="Modified" ColumnName="Modified" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="PreviousId" ColumnName="PreviousId" />
+                <ScalarProperty Name="GitSha" ColumnName="GitSha" />
+                <ScalarProperty Name="VBuild" ColumnName="VBuild" />
+                <ScalarProperty Name="VPatch" ColumnName="VPatch" />
+                <ScalarProperty Name="VMinor" ColumnName="VMinor" />
+                <ScalarProperty Name="VMajor" ColumnName="VMajor" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="BuildJiras">
+            <EntityTypeMapping TypeName="whatsgoingonModel.BuildJira">
+              <MappingFragment StoreEntitySet="BuildJira">
+                <ScalarProperty Name="Jira" ColumnName="Jira" />
+                <ScalarProperty Name="BuildId" ColumnName="BuildId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

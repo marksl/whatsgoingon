@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="09d239e5e9b84847b8fe8a6d2a15d8f9" Name="Diagram1" ZoomLevel="90">
+        <EntityTypeShape EntityType="whatsgoingonModel.BuildData" Width="1.5" PointX="9" PointY="5.625" />
+        <EntityTypeShape EntityType="whatsgoingonModel.Category" Width="1.5" PointX="11.25" PointY="4.375" />
+        <EntityTypeShape EntityType="whatsgoingonModel.BuildDiff" Width="1.5" PointX="9" PointY="2" />
+        <AssociationConnector Association="whatsgoingonModel.FK_BuildDiff_Current" />
+        <AssociationConnector Association="whatsgoingonModel.FK_BuildDiff_Previous" />
+        <EntityTypeShape EntityType="whatsgoingonModel.Build" Width="1.5" PointX="2.125" PointY="6.25" />
+        <EntityTypeShape EntityType="whatsgoingonModel.BuildJira" Width="1.5" PointX="9" PointY="10.5" />
+        <AssociationConnector Association="whatsgoingonModel.FK_Build_BuildData" />
+        <AssociationConnector Association="whatsgoingonModel.FK_Build_BuildDiff" />
+        <AssociationConnector Association="whatsgoingonModel.FK_Build_PreviousBuild" />
+        <AssociationConnector Association="whatsgoingonModel.FK_BuildJira_Build" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
